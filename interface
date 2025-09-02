@@ -1,0 +1,181 @@
+import java.util.Scanner;
+
+// Stack Interface (ADT)
+interface Stack<T> {
+    void push(T item);
+    T pop();
+    boolean isEmpty();
+}
+
+// Array-based Stack Implementation
+class ArrayStack<T> implements Stack<T> {
+    private Object[] stack;
+    private int top;
+    private int capacity;
+
+    public ArrayStack(int capacity) {
+        this.capacity = capacity;
+        stack = new Object[capacity];
+        top = -1;
+    }
+
+    @Override
+    public void push(T item) {
+        if (top == capacity - 1) {
+            System.out.println("Stack Overflow");
+            return;
+        }
+        stack[++top] = item;
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public T pop() {
+        if (isEmpty()) {
+            return null;
+        }
+        return (T) stack[top--];
+    }
+
+    @Override
+    public boolean isEmpty() {
+        return top == -1;
+    }
+}
+
+// Text Editor using Stack for Undo Feature
+class TextEditor {
+    private StringBuilder text;
+    private Stack<String> undoStack;
+
+    public TextEditor() {
+        text = new StringBuilder();
+        undoStack = new ArrayStack<>(100); // Capacity of 100 actions
+    }
+
+    public void type(String newText) {
+        undoStack.push(text.toString()); // Save current state before typing
+        text.append(newText);
+    }
+
+    public void delete(int length) {
+        if (length > text.length()) length = text.length();
+        undoStack.push(text.toString()); // Save current state before deleting
+        text.delete(text.length() - length, text.length());
+    }
+
+    public void undo() {
+        String previousState = undoStack.pop();
+        if (previousState != null) {
+            text = new StringBuilder(previousState);
+        } else {
+            System.out.println("Nothing to undo.");
+        }
+    }
+
+    public void display() {
+        System.out.println("Current Text: " + text.toString());
+    }
+}
+
+// Main Program
+public class geeks{
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+        TextEditor editor = new TextEditor();
+        int choice;
+
+        do {
+            System.out.println("\n--- Text Editor ---");
+            System.out.println("1. Type Text");
+            System.out.println("2. Delete Text");
+            System.out.println("3. Undo");
+            System.out.println("4. Display Text");
+            System.out.println("5. Exit");
+            System.out.print("Enter your choice: ");
+            choice = sc.nextInt();
+            sc.nextLine(); // consume newline
+
+            switch (choice) {
+                case 1:
+                    System.out.print("Enter text to type: ");
+                    String newText = sc.nextLine();
+                    editor.type(newText);
+                    break;
+                case 2:
+                    System.out.print("Enter number of characters to delete: ");
+                    int length = sc.nextInt();
+                    editor.delete(length);
+                    break;
+                case 3:
+                    editor.undo();
+                    break;
+                case 4:
+                    editor.display();
+                    break;
+                case 5:
+                    System.out.println("Exiting Text Editor...");
+                    break;
+                default:
+                    System.out.println("Invalid choice!");
+            }
+        } while (choice != 5);
+
+        sc.close();
+    }
+}
+
+output:
+--- Text Editor ---
+1. Type Text
+2. Delete Text
+3. Undo
+4. Display Text
+5. Exit
+Enter your choice: 1
+Enter text to type: hello
+
+--- Text Editor ---
+1. Type Text
+2. Delete Text
+3. Undo
+4. Display Text
+5. Exit
+Enter your choice: 1
+Enter text to type: world
+
+--- Text Editor ---
+1. Type Text
+2. Delete Text
+3. Undo
+4. Display Text
+5. Exit
+Enter your choice: 4
+Current Text: helloworld
+
+--- Text Editor ---
+1. Type Text
+2. Delete Text
+3. Undo
+4. Display Text
+5. Exit
+Enter your choice: 2
+Enter number of characters to delete: 4
+
+--- Text Editor ---
+1. Type Text
+2. Delete Text
+3. Undo
+4. Display Text
+5. Exit
+Enter your choice: 4
+Current Text: hellow
+
+--- Text Editor ---
+1. Type Text
+2. Delete Text
+3. Undo
+4. Display Text
+5. Exit
+Enter your choice: 5
+Exiting Text Editor...
